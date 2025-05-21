@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Playlist Downloader</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Spotify Playlist Downloader</h1>
+    <form id="downloadForm">
+      <label for="playlistUrl">Spotify Playlist URL:</label>
+      <input type="url" id="playlistUrl" name="playlistUrl" required placeholder="Enter Spotify Playlist URL">
+      <button type="submit">Download</button>
+    </form>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const playlistUrl = document.getElementById('playlistUrl').value;
+      
+        try {
+          const response = await fetch('/download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playlistUrl }),
+          });
+      
+          if (response.ok) {
+            // Create a blob from the response
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+      
+            // Trigger file download
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `Spotify_Playlist.mp3`;
+            a.click();
+      
+            window.URL.revokeObjectURL(downloadUrl); // Clean up URL object
+          } else {
+            alert('Failed to download the file. Please try again.');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('An error occurred. Please check the console for more details.');
+        }
+      });
+      
+  </script>
+</body>
+</html>
